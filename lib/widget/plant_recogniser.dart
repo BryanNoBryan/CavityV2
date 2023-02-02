@@ -75,7 +75,6 @@ class _PlantRecogniserState extends State<PlantRecogniser> {
       'labels at $_labelsFileName, '
       'model at $_modelFileName',
     );
-
     final classifier = await Classifier.loadWith(
       labelsFileName: _labelsFileName,
       modelFileName: _modelFileName,
