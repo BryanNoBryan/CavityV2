@@ -215,7 +215,6 @@ class _PlantRecogniserState extends State<PlantRecogniser> {
       title = '';
     }
 
-    //
     var accuracyLabel = '';
     if (_resultStatus == _ResultStatus.found) {
       accuracyLabel = 'Accuracy: ${(_accuracy * 100).toStringAsFixed(2)}%';
