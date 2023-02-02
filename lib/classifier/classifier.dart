@@ -28,6 +28,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart';
+import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 
 import 'classifier_category.dart';
 import 'classifier_model.dart';
@@ -49,7 +50,7 @@ class Classifier {
     required String modelFileName,
   }) async {
     try {
-      // TODO: _loadLabels
+      final labels = await _loadLabels(labelsFileName);
       // TODO: _loadModel
       // TODO: build and return Classifier
       return null;
@@ -73,5 +74,14 @@ class Classifier {
     // TODO: _postProcessOutput
 
     return ClassifierCategory('Unknown', 0);
+  }
+
+  static Future<ClassifierLabels> _loadLabels(String labelsFileName) async {
+    final rawLabels = await FileUtil.loadLabels(labelsFileName);
+    final labels = rawLabels
+        .map((label) => label.substring(label.indexOf(' ')).trim())
+        .toList();
+    debugPrint('Labels: $labels');
+    return labels;
   }
 }
