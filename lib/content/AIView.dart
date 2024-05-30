@@ -33,16 +33,16 @@ import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import '../classifier/classifier.dart';
 import '../styles.dart';
-import 'plant_photo_view.dart';
+import '../widget/plant_photo_view.dart';
 
 const _labelsFileName = 'assets/labels.txt';
 const _modelFileName = 'model_unquant.tflite';
 
-class PlantRecogniser extends StatefulWidget {
-  const PlantRecogniser({super.key});
+class AIView extends StatefulWidget {
+  const AIView({super.key});
 
   @override
-  State<PlantRecogniser> createState() => _PlantRecogniserState();
+  State<AIView> createState() => _AIViewState();
 }
 
 enum _ResultStatus {
@@ -51,7 +51,7 @@ enum _ResultStatus {
   found,
 }
 
-class _PlantRecogniserState extends State<PlantRecogniser> {
+class _AIViewState extends State<AIView> {
   bool _isAnalyzing = false;
   final picker = ImagePicker();
   File? _selectedImageFile;

@@ -28,11 +28,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-import 'widget/plant_recogniser.dart';
+import 'navigation/MyNavigator.dart';
+import 'providers/app_state.dart';
+import 'providers/user_state.dart';
+import 'content/AIView.dart';
 
-class MainApp extends StatelessWidget {
-  const MainApp({Key? key}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +46,40 @@ class MainApp extends StatelessWidget {
         DeviceOrientation.portraitDown,
       ],
     );
-    return MaterialApp(
-      title: 'Plant Recognizer',
-      theme: ThemeData.light(),
-      home: const PlantRecogniser(),
-      debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) {
+            return AppState();
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (context) {
+            return UserState();
+          },
+        ),
+      ],
+      child: MaterialApp.router(
+        theme: ThemeData(
+            fontFamily: 'OpenSans',
+            primarySwatch: Colors.blue,
+            colorScheme: const ColorScheme(
+              brightness: Brightness.light,
+              primary: Color(0xFF202020),
+              onPrimary: Color(0xFF505050),
+              secondary: Color(0xFFBBBBBB),
+              onSecondary: Color.fromARGB(255, 66, 69, 73),
+              error: Color(0xFFF32424),
+              onError: Color(0xFFF32424),
+              background: Color.fromARGB(255, 118, 125, 134),
+              onBackground: Color.fromARGB(37, 114, 137, 218),
+              surface: Color.fromARGB(255, 255, 255, 255),
+              onSurface: Color.fromARGB(255, 0, 0, 0),
+            )),
+        debugShowCheckedModeBanner: false,
+        routerConfig: MyNavigator.router,
+        title: 'Course Guide',
+      ),
     );
   }
 }

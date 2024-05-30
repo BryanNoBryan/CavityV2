@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "898422214960",
+    "firebase_url": "https://cavity-2df8d-default-rtdb.firebaseio.com",
+    "project_id": "cavity-2df8d",
+    "storage_bucket": "cavity-2df8d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:898422214960:android:613591594565f5eecc78f5",
+        "android_client_info": {
+          "package_name": "com.example.cavity"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxr22wChE-kcYN8bUUzlFXX1EMxNY-hV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:898422214960:android:ed69f5e9d03b08cbcc78f5",
+        "android_client_info": {
+          "package_name": "com.kodeco.plantreco"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxr22wChE-kcYN8bUUzlFXX1EMxNY-hV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

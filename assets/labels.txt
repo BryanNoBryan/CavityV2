@@ -1,4 +1,6 @@
-0 Daisy
-1 Rose
-2 Sunflower
-3 Tulip
+0 calculus
+1 caries
+2 gingivitis
+3 hypodontia
+4 ulcer
+5 discoloration

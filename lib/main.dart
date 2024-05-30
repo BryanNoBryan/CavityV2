@@ -26,11 +26,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'app.dart';
+import 'firebase_options.dart';
+import 'navigation/MyNavigator.dart';
+import 'providers/UserDatabase.dart';
+import 'providers/app_state.dart';
+import 'providers/database.dart';
+import 'providers/user_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseUIAuth.configureProviders([
+    EmailAuthProvider(),
+  ]);
 
-  runApp(const MainApp());
+  MyNavigator();
+
+  // if (kDebugMode) {
+  //   try {
+  //     FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+
+  //     //NEVER FORGOT - THIS LINE WAS 8 HOURS OF DEBUGGING
+  //     FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+  //     //
+
+  //     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  //   } catch (e) {
+  //     // ignore: avoid_print
+  //     print(e);
+  //   }
+  // }
+
+  UserState();
+  AppState();
+  UserDatabase();
+  await Database().retrieveCourses();
+
+  //calculate after initializing providers
+  MyNavigator.calculateNavigation();
+  runApp(const MyApp());
 }
