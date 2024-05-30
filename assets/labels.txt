@@ -1,4 +1,4 @@
-0 Rose
-1 Daisy
+0 Daisy
+1 Rose
 2 Sunflower
 3 Tulip

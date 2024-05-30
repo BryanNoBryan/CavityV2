@@ -68,6 +68,10 @@ class Classifier {
   ClassifierCategory predict(Image image) {
     // Load the image and convert it to TensorImage for TensorFlow Input
     final inputImage = _preProcessInput(image);
+    debugPrint(
+      'Pre-processed image: ${inputImage.width}x${image.height}, '
+      'size: ${inputImage.buffer.lengthInBytes} bytes',
+    );
     // Define the output buffer
     final outputBuffer = TensorBuffer.createFixedSize(
       _model.outputShape,
@@ -75,6 +79,7 @@ class Classifier {
     );
     // Run interface
     _model.interpreter.run(inputImage.buffer, outputBuffer.buffer);
+    debugPrint('OutputBuffer: ${outputBuffer.getDoubleList()}');
     // Post Process the outputBuffer
     final resultCategories = _postProcessOutput(outputBuffer);
     final topResult = resultCategories.first;
@@ -82,19 +87,36 @@ class Classifier {
   }
 
   static Future<ClassifierLabels> _loadLabels(String labelsFileName) async {
+    // #1
     final rawLabels = await FileUtil.loadLabels(labelsFileName);
+
+    // #2
     final labels = rawLabels
         .map((label) => label.substring(label.indexOf(' ')).trim())
         .toList();
+
+    debugPrint('Labels: $labels');
     return labels;
   }
 
   static Future<ClassifierModel> _loadModel(String modelFileName) async {
+    // #1
     final interpreter = await Interpreter.fromAsset(modelFileName);
+
+    // #2
     final inputShape = interpreter.getInputTensor(0).shape;
     final outputShape = interpreter.getOutputTensor(0).shape;
+
+    debugPrint('Input shape: $inputShape');
+    debugPrint('Output shape: $outputShape');
+
+    // #3
     final inputType = interpreter.getInputTensor(0).type;
     final outputType = interpreter.getOutputTensor(0).type;
+
+    debugPrint('Input type: $inputType');
+    debugPrint('Output type: $outputType');
+
     return ClassifierModel(
       interpreter: interpreter,
       inputShape: inputShape,
@@ -105,32 +127,54 @@ class Classifier {
   }
 
   TensorImage _preProcessInput(Image image) {
+    // #1
     final inputTensor = TensorImage(_model.inputType);
     inputTensor.loadImage(image);
+
+    // #2
     final minLength = min(inputTensor.height, inputTensor.width);
     final cropOp = ResizeWithCropOrPadOp(minLength, minLength);
+
+    // #3
     final shapeLength = _model.inputShape[1];
     final resizeOp = ResizeOp(shapeLength, shapeLength, ResizeMethod.BILINEAR);
+
+    // #4
     final normalizeOp = NormalizeOp(127.5, 127.5);
+
+    // #5
     final imageProcessor = ImageProcessorBuilder()
         .add(cropOp)
         .add(resizeOp)
         .add(normalizeOp)
         .build();
+
     imageProcessor.process(inputTensor);
+
+    // #6
     return inputTensor;
   }
 
   List<ClassifierCategory> _postProcessOutput(TensorBuffer outputBuffer) {
+    // #1
     final probabilityProcessor = TensorProcessorBuilder().build();
+
     probabilityProcessor.process(outputBuffer);
+
+    // #2
     final labelledResult = TensorLabel.fromList(_labels, outputBuffer);
+
+    // #3
     final categoryList = <ClassifierCategory>[];
     labelledResult.getMapWithFloatValue().forEach((key, value) {
       final category = ClassifierCategory(key, value);
       categoryList.add(category);
+      debugPrint('label: ${category.label}, score: ${category.score}');
     });
+
+    // #4
     categoryList.sort((a, b) => (b.score > a.score ? 1 : -1));
+
     return categoryList;
   }
 }
