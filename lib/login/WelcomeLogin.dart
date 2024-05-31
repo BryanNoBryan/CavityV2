@@ -40,7 +40,9 @@ class _AuthGateState extends State<AuthGate> {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
+        print('passed pre');
         if (!snapshot.hasData) {
+          print('has data');
           return SignInScreen(
             providers: [
               EmailAuthProvider(),
@@ -57,9 +59,13 @@ class _AuthGateState extends State<AuthGate> {
               })),
               AuthStateChangeAction(((context, state) {
                 dynamic user;
-                if (state is SignedIn) user = state.user;
-                if (state is UserCreated) user = state.credential.user;
-
+                print('passed here');
+                if (state is SignedIn) {
+                  user = state.user;
+                } else if (state is UserCreated) {
+                  user = state.credential.user;
+                }
+                print('passed here 2');
                 if (user == null) {
                   return;
                 }

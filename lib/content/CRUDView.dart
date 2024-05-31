@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cavity/providers/model_classes/Record.dart';
+import 'package:cavity/widget/RecordWidget.dart';
 
 import '../MyColors.dart';
 import '../navigation/MyNavigator.dart';
@@ -50,15 +51,21 @@ class _CRUDViewState extends State<CRUDView> {
       //       Icons.add,
       //       color: Colors.white,
       //     )),
-      body: Column(
-        children: [
-          Center(
-            child: Text(
-              'CRUD View',
-              style: TextStyle(fontSize: 36, color: Colors.white),
+      appBar: AppBar(
+        title: Text("Edit History"),
+        centerTitle: true,
+        backgroundColor: MyColors.green,
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            RecordWidget(
+              time: DateTime.now(),
+              disease: 'you are',
+              onswipe: () {},
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

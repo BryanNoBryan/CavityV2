@@ -28,12 +28,14 @@
 
 import 'dart:io';
 
+import 'package:cavity/MyColors.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import '../classifier/classifier.dart';
 import '../styles.dart';
-import '../widget/plant_photo_view.dart';
+import '../classifier/photo_view.dart';
+import '../widget/ImageDialog.dart';
 
 const _labelsFileName = 'assets/labels.txt';
 const _modelFileName = 'model_unquant.tflite';
@@ -58,7 +60,7 @@ class _AIViewState extends State<AIView> {
 
   // Result
   _ResultStatus _resultStatus = _ResultStatus.notStarted;
-  String _plantLabel = ''; // Name of Error Message
+  String _diseaseLabel = ''; // Name of Error Message
   double _accuracy = 0.0;
 
   late Classifier? _classifier;
@@ -84,32 +86,39 @@ class _AIViewState extends State<AIView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: kBgColor,
-      width: double.infinity,
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.only(top: 30),
-            child: _buildTitle(),
-          ),
-          const SizedBox(height: 20),
-          _buildPhotolView(),
-          const SizedBox(height: 10),
-          _buildResultView(),
-          const Spacer(flex: 5),
-          _buildPickPhotoButton(
-            title: 'Take a photo',
-            source: ImageSource.camera,
-          ),
-          _buildPickPhotoButton(
-            title: 'Pick from gallery',
-            source: ImageSource.gallery,
-          ),
-          const Spacer(),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Dental Detector"),
+        centerTitle: true,
+        backgroundColor: MyColors.green,
+      ),
+      body: Container(
+        // color: kBgColor,
+        width: double.infinity,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            const Spacer(),
+            // Padding(
+            //   padding: const EdgeInsets.only(top: 30),
+            //   child: _buildTitle(),
+            // ),
+            const SizedBox(height: 20),
+            _buildPhotolView(),
+            const SizedBox(height: 10),
+            _buildResultView(),
+            const Spacer(flex: 5),
+            _buildPickPhotoButton(
+              title: 'Take a photo',
+              source: ImageSource.camera,
+            ),
+            _buildPickPhotoButton(
+              title: 'Pick from gallery',
+              source: ImageSource.gallery,
+            ),
+            const Spacer(),
+          ],
+        ),
       ),
     );
   }
@@ -118,7 +127,7 @@ class _AIViewState extends State<AIView> {
     return Stack(
       alignment: AlignmentDirectional.center,
       children: [
-        PlantPhotoView(file: _selectedImageFile),
+        PhotoView(file: _selectedImageFile),
         _buildAnalyzingText(),
       ],
     );
@@ -133,7 +142,7 @@ class _AIViewState extends State<AIView> {
 
   Widget _buildTitle() {
     return const Text(
-      'Plant Recogniser',
+      'Dental Detector',
       style: kTitleTextStyle,
       textAlign: TextAlign.center,
     );
@@ -148,7 +157,7 @@ class _AIViewState extends State<AIView> {
       child: Container(
         width: 300,
         height: 50,
-        color: kColorBrown,
+        color: MyColors.yellow,
         child: Center(
             child: Text(title,
                 style: const TextStyle(
@@ -182,26 +191,38 @@ class _AIViewState extends State<AIView> {
     _analyzeImage(imageFile);
   }
 
-  void _analyzeImage(File image) {
+  void _analyzeImage(File image) async {
     _setAnalyzing(true);
 
     final imageInput = img.decodeImage(image.readAsBytesSync())!;
 
     final resultCategory = _classifier!.predict(imageInput);
 
-    final result = resultCategory.score >= 0.8
+    //most of the time want a result passed
+    final result = resultCategory.score >= 0.4
         ? _ResultStatus.found
         : _ResultStatus.notFound;
-    final plantLabel = resultCategory.label;
+    final diseaseLabel = resultCategory.label;
     final accuracy = resultCategory.score;
 
     _setAnalyzing(false);
 
     setState(() {
       _resultStatus = result;
-      _plantLabel = plantLabel;
+      _diseaseLabel = diseaseLabel;
       _accuracy = accuracy;
     });
+
+    //popup
+    await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => ImageDialog(
+        path: _selectedImageFile!,
+        disease: _diseaseLabel,
+        accuracy: _accuracy,
+      ),
+    );
+    setState(() {});
   }
 
   Widget _buildResultView() {
@@ -210,7 +231,7 @@ class _AIViewState extends State<AIView> {
     if (_resultStatus == _ResultStatus.notFound) {
       title = 'Fail to recognise';
     } else if (_resultStatus == _ResultStatus.found) {
-      title = _plantLabel;
+      title = _diseaseLabel;
     } else {
       title = '';
     }

@@ -1,4 +1,5 @@
 import '../MyColors.dart';
+import '../navigation/MyNavigator.dart';
 import '../providers/UserDatabase.dart';
 import '../providers/database.dart';
 import '../providers/model_classes/MyUser.dart';
@@ -46,6 +47,8 @@ class _ProfileState extends State<Profile> {
             ),
             onPressed: () {
               UserState().logout();
+              MyNavigator.shell.goBranch(0);
+              print('outout');
             },
             child: Text(
               'Logout',
